@@ -1,67 +1,50 @@
-def calculator(consumption: list, distributor_tax: float, tax_type: str) -> tuple:
-    """
-    returns a tuple of floats contained anual savings, monthly savings, applied_discount and coverage
-    """
-    annual_savings = 0
-    monthly_savings = 0
-    applied_discount = 0
-    coverage = 0
-
-    # Dicionário com os descontos por tipo de tarifa e consumo
-    discount_dict = {
-        "Residencial": {
-            "< 10.000 kWh": 0.18,
-            ">= 10.000 kWh e <= 20.000 kWh": 0.22,
-            "> 20.000 kWh": 0.25,
-        },
-        "Comercial": {
-            "< 10.000 kWh": 0.16,
-            ">= 10.000 kWh e <= 20.000 kWh": 0.18,
-            "> 20.000 kWh": 0.22,
-        },
-        "Industrial": {
-            "< 10.000 kWh": 0.12,
-            ">= 10.000 kWh e <= 20.000 kWh": 0.15,
-            "> 20.000 kWh": 0.18,
-        },
-    }
-
-    # Dicionário com os percentuais de cobertura por consumo
-    coverage_dict = {
-        "< 10.000 kWh": 0.9,
-        ">= 10.000 kWh e <= 20.000 kWh": 0.95,
-        "> 20.000 kWh": 0.99,
-    }
-
-    # Cálculo do consumo médio
-    consumption_average = sum(consumption) / len(consumption)
-
-    # Obtenção da faixa de consumo baseado no consumo médio
-    if consumption_average < 10000:
-        consumption_range = "< 10.000 kWh"
-    elif consumption_average <= 20000:
-        consumption_range = ">= 10.000 kWh e <= 20.000 kWh"
+def calculandoDesconto(consumoMedio, tipoTarifa):
+    if tipoTarifa == 'Residencial':
+        if consumoMedio < 10000:
+            return 0.18
+        elif 10000 <= consumoMedio <= 20000:
+            return 0.22
+        else:
+            return 0.25
+    elif tipoTarifa == 'Comercial':
+        if consumoMedio < 10000:
+            return 0.16
+        elif consumoMedio <= 20000:
+            return 0.18
+        else:
+            return 0.22
+    elif tipoTarifa == 'Industrial':
+        if consumoMedio < 10000:
+            return 0.12
+        elif 10000 <= consumoMedio <= 20000:
+            return 0.15
+        else:
+            return 0.18
     else:
-        consumption_range = "> 20.000 kWh"
+        return 0.0
+    
+def calculandoCobertura(consumoMedio):
+    if consumoMedio < 10000:
+        return 0.9
+    elif 10000 <= consumoMedio <= 20000:
+        return 0.95
+    else:
+        return 0.99
 
-    applied_discount = discount_dict[tax_type][consumption_range]
-    coverage = coverage_dict.get(consumption_range)
-    # Obtendo o percentual de cobertura baseado no consumo médio
-
-    # Cálculo da economia mensal e anual
-    monthly_savings = (
-        distributor_tax * consumption_average * applied_discount * coverage
-    )
-    annual_savings = monthly_savings * 12
+def calculator(consumo, tarifa, tipoTarifa):
+    consumoMedio = sum(consumo) / len(consumo)
+    
+    desconto = calculandoDesconto(consumoMedio, tipoTarifa)
+    cobertura = calculandoCobertura(consumoMedio)
+    economiaMensal = consumoMedio * desconto * tarifa * cobertura
+    economiaAnual = economiaMensal * 12  # Corrigido: incluído cobertura no cálculo da economia mensal
 
     return (
-        round(annual_savings, 2),
-        round(monthly_savings, 2),
-        applied_discount,
-        coverage,
-    )
-
-
+        round(economiaAnual, 2),
+        round(economiaMensal, 2),
+        desconto,
+        cobertura,
+    ) 
 if __name__ == "__main__":
     print("Testing...")
 

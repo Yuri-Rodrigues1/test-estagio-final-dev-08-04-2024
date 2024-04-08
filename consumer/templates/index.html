@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Consumo de Energia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #424040;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 50px;
+        }
+
+        .calculadora {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            height: 80%;
+        }
+
+        .resultado {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            height: 90%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: rgb(131, 216, 131);
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: rgb(132, 239, 132)
+        }
+
+        .resultados {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculadora">
+            <h1>Calculadora de Consumo de Energia</h1>
+            <form method="post">
+                {% csrf_token %}
+                <label for="consumo1">Consumo Mês 1 (kWh):</label>
+                <input type="number" id="consumo1" name="consumo1" required>
+                <label for="consumo2">Consumo Mês 2 (kWh):</label>
+                <input type="number" id="consumo2" name="consumo2" required>
+                <label for="consumo3">Consumo Mês 3 (kWh):</label>
+                <input type="number" id="consumo3" name="consumo3" required>
+                <label for="tarifa">Tarifa da Distribuidora:</label>
+                <input type="number" step="0.01" id="tarifa" name="tarifa" required>
+                <label for="tipo">Tipo de Tarifa:</label>
+                <select id="tipo" name="tipo" required>
+                    <option value="Residencial">Residencial</option>
+                    <option value="Comercial">Comercial</option>
+                    <option value="Industrial">Industrial</option>
+                </select>
+                <button type="submit">Calcular</button>
+            </form>
+        </div>
+        <div class="resultado">
+            <h2>Economia Anual: {{ economia_anual }}</h2>
+            <h2>Economia Mensal: {{ economia_mensal }}</h2>
+            <h2>Desconto Aplicado: {{ desconto_aplicado }}</h2>
+            <h2>Cobertura: {{ cobertura }}</h2>
+        </div>
+    </div>
+    <script>
+        function calcularConsumo() {
+            var consumo1 = document.getElementById('consumo1').value;
+            var consumo2 = document.getElementById('consumo2').value;
+            var consumo3 = document.getElementById('consumo3').value;
+            var tarifa = document.getElementById('tarifa').value;
+            var tipo = document.getElementById('tipo').value;
+
+            var data = {
+                'consumo1': parseFloat(consumo1),
+                'consumo2': parseFloat(consumo2),
+                'consumo3': parseFloat(consumo3),
+                'tarifa': parseFloat(tarifa),
+                'tipo_tarifa': tipo
+            };
+
+            fetch('/api/calculadora/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('economia_anual').innerText = 'Economia Anual: ' + data.economia_anual;
+                document.getElementById('economia_mensal').innerText = 'Economia Mensal: ' + data.economia_mensal;
+                document.getElementById('desconto_aplicado').innerText = 'Desconto Aplicado: ' + data.desconto_aplicado;
+                document.getElementById('cobertura').innerText = 'Cobertura: ' + data.cobertura;
+            })
+            .catch(error => console.error('Erro ao calcular consumo:', error));
+        }
+    </script>
+</body>
+</html>

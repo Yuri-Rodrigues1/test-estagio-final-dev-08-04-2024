@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Consumidor</title>
+</head>
+<body>
+    <h1>Cadastro de Consumidor</h1>
+    <form action="{% url 'cadastrar_consumidor' %}" method="post">
+        {% csrf_token %}
+        <label for="name">Nome do Consumidor:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        
+        <label for="document">Documento (CPF/CNPJ):</label><br>
+        <input type="text" id="document" name="document" required><br>
+        
+        <label for="zip_code">CEP:</label><br>
+        <input type="text" id="zip_code" name="zip_code"><br>
+        
+        <label for="city">Cidade:</label><br>
+        <input type="text" id="city" name="city" required><br>
+        
+        <label for="state">Estado:</label><br>
+        <input type="text" id="state" name="state" required><br>
+        
+        <label for="consumption">Consumo (kWh):</label><br>
+        <input type="number" id="consumption" name="consumption"><br>
+        
+        <label for="distributor_tax">Tarifa da Distribuidora:</label><br>
+        <input type="float" id="distributor_tax" name="distributor_tax"><br>
+        
+        <input type="submit" value="Cadastrar">
+    </form>
+</body>
+</html>
